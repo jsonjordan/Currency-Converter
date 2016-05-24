@@ -7,18 +7,19 @@ class Currency
   # YEN_GBP = 158.25
 
   def initialize amount, denomination = :usd
-    @amount = amount
-    @denomination = denomination
+    @amount, @denomination = amount, denomination
+    #@denomination = denomination
   end
 
   def is_num? value
-    value == value.to_i.to_s.to_i
+    value == value.to_f.to_s.to_f
   end
 
   def get_rid_of_sign value
-    value.split("").drop(1).join.to_i
+    value.split("").drop(1).join.to_f
   end
 
+  #attr_reader :amount, :denomination  (sets up method for each)
   def amount
     if is_num? @amount
       @amount
@@ -32,12 +33,12 @@ class Currency
       @denomination
     elsif @amount.split("").first == "$"
       @denomination = :usd
-    else
+    elsif @amount.split("").first == "£"
       @denomination = :gbp
     end
   end
 
-  def match other_currency
+  def denomination_match other_currency
     denomination == other_currency.denomination
   end
 
@@ -46,7 +47,7 @@ class Currency
   end
 
   def plus other_currency
-    if match other_currency
+    if denomination_match other_currency
       Currency.new((amount + other_currency.amount), denomination)
     elsif (other_currency.denomination == :gbp) && (denomination == :usd)
       Currency.new((amount + (other_currency.to(:usd).amount)), denomination)
@@ -56,8 +57,12 @@ class Currency
   end
 
   def minus other_currency
-    if match other_currency
-      Currency.new((amount - other_currency.amount), denomination)
+    if denomination_match other_currency
+      if amount > other_currency.amount
+        Currency.new((amount - other_currency.amount), denomination)
+      else
+        raise "You can't have negative money"
+      end
     elsif (other_currency.denomination == :gbp) && (denomination == :usd)
       Currency.new((amount - (other_currency.to(:usd).amount)), denomination)
     elsif (other_currency.denomination == :usd) && (denomination == :gbp)
@@ -66,27 +71,15 @@ class Currency
   end
 
   def + other_currency
-    if match other_currency
-      Currency.new((amount + other_currency.amount), denomination)
-    elsif (other_currency.denomination == :gbp) && (denomination == :usd)
-      Currency.new((amount + (other_currency.to(:usd).amount)), denomination)
-    elsif (other_currency.denomination == :usd) && (denomination == :gbp)
-      Currency.new((amount + (other_currency.to(:gbp).amount)), denomination)
-    end
+    plus other_currency
   end
 
   def - other_currency
-    if match other_currency
-      Currency.new((amount - other_currency.amount), denomination)
-    elsif (other_currency.denomination == :gbp) && (denomination == :usd)
-      Currency.new((amount - (other_currency.to(:usd).amount)), denomination)
-    elsif (other_currency.denomination == :usd) && (denomination == :gbp)
-      Currency.new((amount - (other_currency.to(:gbp).amount)), denomination)
-    end
+    minus other_currency
   end
 
   def == other_currency
-    if match other_currency
+    if denomination_match other_currency
       amount == other_currency.amount
     elsif (other_currency.denomination == :gbp) && (denomination == :usd)
       amount == (other_currency.to(:usd).amount)
