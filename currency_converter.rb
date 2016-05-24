@@ -3,38 +3,38 @@ require 'pry'
 class Currency
 
   GBP_USD = 0.69
-  YEN_USD = 109.29
-  YEN_GBP = 158.25
+  # YEN_USD = 109.29    wanted to impliment, ran out of time
+  # YEN_GBP = 158.25
 
   def initialize amount, denomination = :usd
     @amount = amount
     @denomination = denomination
   end
 
-  def is_num? abcdefg   #change when you think of better name than abcdefg
-    abcdefg == abcdefg.to_i.to_s.to_i
+  def is_num? value
+    value == value.to_i.to_s.to_i
   end
 
   def get_rid_of_sign value
     value.split("").drop(1).join.to_i
   end
 
-  def parse
+  def amount
     if is_num? @amount
-      Currency.new(@amount, @denomination)
-    elsif @amount.split("").first == "$"
-      Currency.new((get_rid_of_sign @amount), :usd)
+      @amount
     else
-      Currency.new((get_rid_of_sign @amount), :gbp)
+      get_rid_of_sign @amount
     end
   end
 
-  def amount
-    @amount
-  end
-
   def denomination
-    @denomination
+    if is_num? @amount
+      @denomination
+    elsif @amount.split("").first == "$"
+      @denomination = :usd
+    else
+      @denomination = :gbp
+    end
   end
 
   def match other_currency
@@ -101,7 +101,7 @@ class Currency
 
   def to convert_to
     if convert_to == denomination
-      Currency.new(amount, denomination)
+      self
     elsif convert_to == :usd
       Currency.new((amount/GBP_USD).round(2), :usd)
     elsif convert_to == :gbp      #made this an elsif to add ability to add in more currency types later on
@@ -116,5 +116,6 @@ a = Currency.new(5, :usd)
 b = Currency.new(10, :usd)
 c = Currency.new(5, :gbp)
 d = Currency.new("$5")
+e = Currency.new("£8")
 
 binding.pry
