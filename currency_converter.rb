@@ -12,7 +12,7 @@ class Currency
   end
 
   def is_num? abcdefg   #change when you think of better name than abcdefg
-    abcdefg != abcdefg.to_i.to_s
+    abcdefg == abcdefg.to_i.to_s.to_i
   end
 
   def parse
