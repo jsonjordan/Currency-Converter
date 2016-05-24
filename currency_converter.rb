@@ -15,11 +15,17 @@ class Currency
     abcdefg == abcdefg.to_i.to_s.to_i
   end
 
+  def get_rid_of_sign value
+    value.split("").drop(1).join.to_i
+  end
+
   def parse
     if is_num? @amount
       Currency.new(@amount, @denomination)
+    elsif @amount.split("").first == "$"
+      Currency.new((get_rid_of_sign @amount), :usd)
     else
-      puts "work"
+      Currency.new((get_rid_of_sign @amount), :gbp)
     end
   end
 
@@ -109,5 +115,6 @@ end
 a = Currency.new(5, :usd)
 b = Currency.new(10, :usd)
 c = Currency.new(5, :gbp)
+d = Currency.new("$5")
 
 binding.pry
