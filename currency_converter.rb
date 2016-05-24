@@ -41,10 +41,6 @@ class Currency
     denomination == other_currency.denomination
   end
 
-  def no_match
-    puts "The currencys do not match!"
-  end
-
   def times factor
     Currency.new((amount * factor), denomination)
   end
